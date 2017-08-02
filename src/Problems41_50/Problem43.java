@@ -45,7 +45,7 @@ public class Problem43 {
                     if (a.substring(1, 3).equals(b.substring(0,2)) &&
                             !a.substring(0,1).equals(b.substring(b.length()-1)))
                     {
-                        temp.add(a + b.substring(2));
+                        temp.add(a + b.substring(b.length()-1));
                     }
                 }
             }
