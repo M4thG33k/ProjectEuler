@@ -7,6 +7,11 @@ public class Prime {
 
     private static List<Long> PRIMEZ;
 
+    public static List<Long> init()
+    {
+        return primesStrictlyBelow(1000000);
+    }
+
     public static long findLargestPrimeFactor(long n)
     {
         if (n < 2)
