@@ -7,10 +7,6 @@ import java.util.Set;
 
 public class Problem43 {
 
-    /*
-    NOT FULLY WORKING
-     */
-
     private static int[] divisors = new int[]{2, 3, 5, 7, 11, 13, 17};
     private static Map<Integer, Set<String>> map = new HashMap<>();
 
@@ -27,8 +23,7 @@ public class Problem43 {
         {
             for (String b: map.get(17))
             {
-                if (a.substring(1, 3).equals(b.substring(0,2)) &&
-                        !a.substring(0,1).equals(b.substring(2)))
+                if (canPrepend(a, b))
                 {
                     partial.add(a + b.substring(2));
                 }
@@ -42,10 +37,9 @@ public class Problem43 {
             {
                 for (String b : partial)
                 {
-                    if (a.substring(1, 3).equals(b.substring(0,2)) &&
-                            !a.substring(0,1).equals(b.substring(b.length()-1)))
+                    if (canPrepend(a, b))
                     {
-                        temp.add(a + b.substring(b.length()-1));
+                        temp.add(a + b.substring(2));
                     }
                 }
             }
@@ -54,12 +48,29 @@ public class Problem43 {
         }
 
         long total = 0;
+        int missing;
         for (String val : partial)
         {
-            System.out.println(val);
-            total += Long.parseLong(val);
+            missing = findMissing(val);
+            total += Long.parseLong(missing + val);
         }
         System.out.println(total);
+    }
+
+    private static boolean canPrepend(String first, String second)
+    {
+        if (first.substring(1).equals(second.substring(0,2)))
+        {
+            Set<Character> sec = new HashSet<>();
+            for (char c : second.toCharArray())
+            {
+                sec.add(c);
+            }
+
+            return !sec.contains(first.charAt(0));
+        }
+
+        return false;
     }
 
     private static void generateFor(int val)
@@ -68,7 +79,15 @@ public class Problem43 {
         int iter = val;
         while (iter < 1000)
         {
-            if (iter >= 100 && !containsDupes(iter))
+            if (iter >= 10 && iter < 100)
+            {
+                String temp = "0" + iter;
+                if (!containsDupes(temp))
+                {
+                    map.get(val).add(temp);
+                }
+            }
+            else if (iter >= 100 && !containsDupes(iter))
             {
                 map.get(val).add(""+iter);
             }
@@ -94,5 +113,43 @@ public class Problem43 {
         }
 
         return false;
+    }
+
+    private static boolean containsDupes(String val)
+    {
+        Set<Character> chars = new HashSet<>();
+        for (char c : val.toCharArray())
+        {
+            if (chars.contains(c))
+            {
+                return true;
+            }
+            chars.add(c);
+        }
+
+        return false;
+    }
+
+    private static int findMissing(String val)
+    {
+        boolean[] digits = new boolean[10];
+        long value = Long.parseLong(val);
+        int digit;
+        for (int i=0; i<val.length(); i++)
+        {
+            digit = (int)(value%10);
+            digits[digit] = true;
+            value /= 10;
+        }
+
+        for (int i=0; i<10; i++)
+        {
+            if (!digits[i])
+            {
+                return i;
+            }
+        }
+
+        return -1;
     }
 }
