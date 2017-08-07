@@ -155,4 +155,54 @@ public class Prime {
 
         return total;
     }
+
+    public static boolean isPrime(long number)
+    {
+        if (number%2==0)
+        {
+            return false;
+        }
+
+        if (PRIMEZ != null) {
+            if (number <= PRIMEZ.get(PRIMEZ.size() - 1)) {
+                return PRIMEZ.contains(number);
+            }
+            else
+            {
+                long p = 3;
+                long maxCheck = (long)Math.sqrt(number);
+                for (long prime : PRIMEZ)
+                {
+                    if (number%prime == 0)
+                    {
+                        return false;
+                    }
+                    if (prime > maxCheck)
+                    {
+                        return true;
+                    }
+                    p = prime;
+                }
+                p += 2;
+                while (p <= maxCheck)
+                {
+                    if (number%p == 0)
+                    {
+                        return false;
+                    }
+                    p += 2;
+                }
+                return true;
+            }
+        }
+        for (long i= 3; i < (long)Math.ceil(Math.sqrt(number)); i += 2)
+        {
+            if (number%i == 0)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
