@@ -26,6 +26,10 @@ public class LargeNumber
         this.vals.addAll(old.vals);
     }
 
+    public void add(int other){
+        this.add(new LargeNumber(other));
+    }
+
     public void add(LargeNumber other)
     {
         List<Integer> result = new ArrayList<>();
@@ -122,6 +126,10 @@ public class LargeNumber
         return builder.reverse().toString();
     }
 
+    public int toInt(){
+        return Integer.parseInt(this.toString());
+    }
+
     public long digitSum()
     {
         long total = 0;
@@ -130,6 +138,14 @@ public class LargeNumber
             total += val;
         }
         return total;
+    }
+
+    public int getNthDigit(int n){
+        if (n < 0 || n >= this.vals.size()){
+            return -1;
+        } else {
+            return this.vals.get(n);
+        }
     }
 
     public LargeNumber squared()
@@ -181,4 +197,69 @@ public class LargeNumber
 
         return true;
     }
+
+    public int length(){
+        return this.vals.size();
+    }
+
+    public LargeNumber findAbsDifference(LargeNumber other){
+        if (this.isGreaterThan(other)){
+            return other.findAbsDifference(this);
+        } else if (this.equals(other)){
+            return new LargeNumber(0);
+        }
+
+        // We're guaranteed at this point that this < other
+        LargeNumber large = new LargeNumber(other);
+        LargeNumber small = new LargeNumber(this);
+        LargeNumber ret = new LargeNumber(0);
+        int x;
+        int i=0;
+
+        while (i < small.vals.size()){
+            x = large.vals.get(i) - small.vals.get(i);
+            if (x < 0){
+                large.borrow(i);
+                x += 10;
+            }
+            if (i==0){
+                ret = new LargeNumber(x);
+            } else {
+                ret.vals.add(x);
+            }
+
+            i++;
+        }
+
+        large.removeLeadingZeros();
+
+        while (i < large.vals.size()){
+            ret.vals.add(large.vals.get(i));
+            i++;
+        }
+
+        ret.removeLeadingZeros();
+        return ret;
+    }
+
+    public void borrow(int place){
+        if (place >= this.vals.size()-1){
+            return;
+        }
+
+        this.vals.set(place, this.vals.get(place)+10);
+        this.vals.set(place+1, this.vals.get(place+1)-1);
+        if (this.vals.get(place+1) < 0){
+            this.borrow(place+1);
+        }
+
+        this.removeLeadingZeros();
+    }
+
+    public void removeLeadingZeros(){
+        while (this.vals.size() > 0 && this.vals.get(this.vals.size()-1) == 0){
+            this.vals.remove(this.vals.size()-1);
+        }
+    }
+
 }
