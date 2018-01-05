@@ -205,4 +205,105 @@ public class Prime {
 
         return true;
     }
+
+    public static Set<Long> getAllFactors(long val){
+        Set<Long> ret = new HashSet<>();
+        for (long x=1; x<=val; x++){
+            if (val%x==0){
+                ret.add(x);
+            }
+        }
+
+        return ret;
+    }
+
+    private static class DataWrapper{
+        public Map<Long, Integer> map;
+        public int numFactors = 0;
+        public long factorSum = 0;
+        public long product;
+
+        public DataWrapper(long product){
+            this.product = product;
+            this.map = primeFactorMap(product);
+            for (long key: map.keySet()){
+                numFactors += map.get(key);
+                factorSum += key * map.get(key);
+            }
+        }
+
+        public DataWrapper(){
+            this.product = 0;
+            this.map = new HashMap<>();
+        }
+
+        @Override
+        public String toString() {
+            return String.format("%d %d %d %s", product, numFactors, factorSum, map.toString());
+        }
+
+
+        public List<DataWrapper> condense(){
+            List<DataWrapper> ret = new ArrayList<>();
+
+            if (numFactors <= 2){
+                return ret;
+            }
+
+            List<Long> factors = new ArrayList<>(this.map.keySet());
+            for (int i=0; i<factors.size(); i++){
+                long factor = factors.get(i);
+                if (this.map.get(factor) > 1){
+                    // If there are at least two of this value, we can choose it twice
+                    DataWrapper temp = new DataWrapper();
+                    temp.product = this.product;
+                    temp.factorSum = this.factorSum - 2*factor + factor*factor;
+                    temp.numFactors = this.numFactors - 1;
+                    temp.map = new HashMap<>(this.map);
+                    if (this.map.get(factor) == 2){
+                        temp.map.remove(factor);
+                    } else {
+                        temp.map.put(factor, this.map.get(factor)-2);
+                    }
+                    long factor2 = factor*factor;
+                    if (temp.map.containsKey(factor2)){
+                        temp.map.put(factor2, temp.map.get(factor2)+1);
+                    } else {
+                        temp.map.put(factor2, 1);
+                    }
+                    ret.add(temp);
+                }
+                for (int j=i+1; j<factors.size(); j++){
+                    long second = factors.get(j);
+                    long prod = factor*second;
+                    DataWrapper temp = new DataWrapper();
+                    temp.product = this.product;
+                    temp.factorSum = this.factorSum - factor - second + prod;
+                    temp.numFactors = this.numFactors - 1;
+                    temp.map = new HashMap<>(this.map);
+                    if (this.map.get(factor) == 1){
+                        temp.map.remove(factor);
+                    } else {
+                        temp.map.put(factor, this.map.get(factor)-1);
+                    }
+
+                    if (this.map.get(second) == 1){
+                        temp.map.remove(second);
+                    } else {
+                        temp.map.put(second, this.map.get(second)-1);
+                    }
+
+                    if (temp.map.containsKey(prod)){
+                        temp.map.put(prod, temp.map.get(prod)+1);
+                    } else {
+                        temp.map.put(prod, 1);
+                    }
+
+                    ret.add(temp);
+                }
+            }
+
+            return ret;
+        }
+    }
 }
