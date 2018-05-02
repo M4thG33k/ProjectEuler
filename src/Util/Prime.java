@@ -217,6 +217,34 @@ public class Prime {
         return ret;
     }
 
+    public static Set<Long> getAllProperFactors(long val){
+        Set<Long> ret = new HashSet<>();
+        if (val <= 1L){
+            ret.add(0L);
+            return ret;
+        }
+        ret.add(1L);
+        long a=2;
+        long b;
+
+        while (true){
+            if (ret.contains(a) || a>=val){
+                break;
+            }
+            if (val%a==0){
+                b = val/a;
+                ret.add(a);
+                ret.add(b);
+            }
+            a += 1;
+        }
+        return ret;
+    }
+
+    public static long getSumOfProperFactors(long val){
+        return getAllProperFactors(val).stream().reduce(0L, (a,b) -> a+b);
+    }
+
     private static class DataWrapper{
         public Map<Long, Integer> map;
         public int numFactors = 0;
