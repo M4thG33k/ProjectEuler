@@ -25,6 +25,7 @@ public class Problem98 {
             );
 
             words.forEach(System.out::println);
+            System.out.println("TEST");
 
             // WIP
         } catch (IOException e){
