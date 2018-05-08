@@ -343,4 +343,51 @@ public class LargeNumber {
         return ret;
     }
 
+    public Point<LargeNumber, LargeNumber> divMod(LargeNumber other){
+//        System.out.println("DivMod: " + this + " % " + other);
+        // naive approach for now
+        List<Point<LargeNumber, LargeNumber>> mults = new ArrayList<>();
+        LargeNumber ticker = new LargeNumber(1);
+        LargeNumber product = new LargeNumber(other);
+        while (this.isGreateThanOrEqualTo(product)){
+            mults.add(new Point<>(new LargeNumber(ticker), new LargeNumber(product)));
+            ticker.times(2);
+            product.add(product);
+        }
+//        System.out.println(this);
+//        System.out.println(other);
+//        System.out.println(mults);
+
+        int index = mults.size()-1;
+        LargeNumber temp = new LargeNumber(this);
+        LargeNumber divs = new LargeNumber(0);
+
+        while (!temp.equals(LargeNumber.ZERO) && index >= 0){
+//            System.out.println("Temp: " + temp + "; Index: " + index);
+            LargeNumber times = mults.get(index).getFirst();
+            LargeNumber mult = mults.get(index).getSecond();
+
+            while (temp.isGreateThanOrEqualTo(mult) && !temp.equals(LargeNumber.ZERO)){
+//                System.out.println(mult);
+//                System.out.println(temp);
+//                System.out.println(times);
+                divs.add(times);
+                temp = temp.findAbsDifference(mult);
+            }
+
+            index -= 1;
+        }
+
+//        System.out.println("Returning " + divs + ", " + temp);
+        return new Point<>(divs, temp);
+
+//        LargeNumber temp = new LargeNumber(this);
+//        LargeNumber divs = new LargeNumber(0);
+//        while (temp.isGreateThanOrEqualTo(other)){
+//            divs.add(1);
+//            temp = temp.findAbsDifference(other);
+//        }
+//        return new Point<>(divs, temp);
+    }
+
 }
